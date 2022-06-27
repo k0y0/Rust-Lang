@@ -1,4 +1,3 @@
-use std::env;
 use std::path::Path;
 use std::fs::File;
 use std::io::Read;
@@ -30,21 +29,20 @@ fn run(filepath: &str) {
 
     match File::open(filename) {
         Ok(mut file) => {
+            println!("Detecting content language...");
             let mut content = String::new();
 
             file.read_to_string(&mut content).unwrap();
-
-            println!("{}", content);
+            
+            
+            println!("file conetent:, \"{}...\"", &content[..50]);
             
             let info = whatlang::detect(&content).unwrap();
 
-            println!("{}", info.lang());
+            println!("Detected language: {}", info.lang());
         },
         Err(error) => {
             println!("Error opening file {}", error);
         }
     }
-
-
-
 }
