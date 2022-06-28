@@ -1,8 +1,5 @@
-use std::path::Path;
-use std::fs::File;
-use std::io::Read;
-
-extern crate whatlang;
+use std::fs;
+use std::env;
 
 fn main() {
     let filepath: String = get_file_path();
@@ -11,38 +8,16 @@ fn main() {
 }
 
 fn get_file_path() -> String {
-    let mut args = std::env::args();
-
-    let url: String = args.nth(1).expect("Url");        
-    
-    url
+    env::args().nth(1).expect("Url")      
 }
 
 
 fn run(filepath: &str) {
-    let filename = Path::new(filepath);
+    let content = fs::read_to_string(filepath).unwrap();
 
-    if !filename.exists() {
-        println!("File not exists");
-        return ;
-    }
+    println!("file content \"{}...", &content[..50]);
 
-    match File::open(filename) {
-        Ok(mut file) => {
-            println!("Detecting content language...");
-            let mut content = String::new();
+    let info = whatlang::detect(&content).unwrap();
 
-            file.read_to_string(&mut content).unwrap();
-            
-            
-            println!("file conetent:, \"{}...\"", &content[..50]);
-            
-            let info = whatlang::detect(&content).unwrap();
-
-            println!("Detected language: {}", info.lang());
-        },
-        Err(error) => {
-            println!("Error opening file {}", error);
-        }
-    }
+    println!("detected language: {}", info.lang());
 }
